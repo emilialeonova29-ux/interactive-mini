@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>INTERACTIVE-MINI HUB</title>
+<style>
+:root{
+  --bg:#f5f6f8;--panel:#fff;--text:#263243;--muted:#6d7786;--line:#dde3e9;
+  --accent:#315f86;--accent-soft:#eaf2f8;--good:#2a704d;--good-soft:#eaf5ef;
+  --bad:#a13d3d;--bad-soft:#fdeeee
+}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,"PT Sans",sans-serif}
+button,select{font:inherit}.shell{max-width:980px;margin:0 auto;padding:22px}
+.top{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;margin-bottom:18px}
+h1{margin:0 0 5px;font-size:28px}.subtitle{color:var(--muted);font-size:14px}
+.badge{font-size:12px;padding:7px 10px;border:1px solid var(--line);border-radius:999px;background:#fff;color:var(--muted)}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.tab,.secondary,.launch,.primary{min-height:44px;border-radius:12px;padding:10px 15px;cursor:pointer}
+.tab,.secondary{background:#fff;border:1px solid var(--line);color:var(--text)}
+.tab.active,.launch,.primary{background:var(--accent);border:1px solid var(--accent);color:#fff}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px}
+.view[hidden]{display:none!important}.section-title{font-size:20px;margin:0 0 14px}
+.list{display:grid;gap:12px}.activity{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;border:1px solid var(--line);border-radius:16px;padding:16px}
+.activity h3{margin:0 0 6px;font-size:18px}.meta{font-size:14px;line-height:1.45;color:var(--muted)}
+.note{margin-top:14px;padding:12px 14px;border-radius:12px;background:var(--accent-soft);color:#34536d;font-size:14px;line-height:1.45}
+.player{display:none}.player.active{display:block}.player-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:14px}
+.eyebrow{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:4px}
+.player h2{margin:0;font-size:24px}.progress{font-size:14px;color:var(--muted);white-space:nowrap}
+.prompt{padding:18px;border:1px solid var(--line);border-radius:14px;background:#fafbfc;font-size:22px;line-height:1.35;margin-bottom:18px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.field{border:1px solid var(--line);border-radius:14px;padding:12px}
+.field.error{border-color:var(--bad);background:var(--bad-soft)}.field.ok{border-color:var(--good);background:var(--good-soft)}
+label{display:block;font-weight:700;margin-bottom:7px}select{width:100%;min-height:44px;border:1px solid #cbd3dc;border-radius:10px;background:#fff;padding:8px 10px;color:var(--text)}
+.hint{display:none;margin-top:8px;font-size:13px;line-height:1.4;color:var(--bad)}.field.error .hint{display:block}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.feedback{min-height:24px;margin-top:14px;font-size:14px}
+.feedback.good{color:var(--good)}.feedback.bad{color:var(--bad)}
+.result{padding:18px;border-radius:16px;background:var(--good-soft);border:1px solid #cfe5d8}.result h3{margin:0 0 8px}.score{font-size:34px;font-weight:800;margin:8px 0}
+.history{width:100%;border-collapse:collapse;font-size:14px}.history th,.history td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}.history th{color:var(--muted);font-weight:600}
+.empty{color:var(--muted);padding:8px 0}.date{font-size:12px;color:var(--muted);margin-bottom:5px}
+@media(max-width:680px){
+  .shell{padding:14px}.top{display:block}.badge{display:inline-block;margin-top:10px}.activity{grid-template-columns:1fr}.grid{grid-template-columns:1fr}
+  .prompt{font-size:19px}h1{font-size:24px}.player h2{font-size:21px}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="top">
+    <div>
+      <h1>INTERACTIVE-MINI HUB</h1>
+      <div class="subtitle">Короткая самостоятельная практика на 3–7 минут</div>
+    </div>
+    <div class="badge">MVP · пилот</div>
+  </div>
+
+  <div class="tabs" role="tablist" aria-label="Разделы">
+    <button class="tab active" data-view="today" type="button">Сегодня</button>
+    <button class="tab" data-view="all" type="button">Все интерактивы</button>
+    <button class="tab" data-view="results" type="button">Результаты</button>
+  </div>
+
+  <section class="panel view" id="view-today">
+    <h2 class="section-title">Ближайшие пилоты</h2>
+    <div class="list">
+      <div class="activity">
+        <div>
+          <div class="date">21.09 · пилот №2</div>
+          <h3>Сева — способы словообразования</h3>
+          <div class="meta">6 класс · 4 слова · производящее слово + способ образования · без таблицы правил</div>
+        </div>
+        <button class="launch" data-start="word-formation" type="button">Начать</button>
+      </div>
+      <div class="activity">
+        <div>
+          <div class="date">22.09 · пилот №1</div>
+          <h3>Дима — характеристика предложения</h3>
+          <div class="meta">8 класс · 5 предложений · 4 характеристики каждого предложения</div>
+        </div>
+        <button class="launch" data-start="sentence-characteristics" type="button">Начать</button>
+      </div>
+    </div>
+    <div class="note">Смысл пилотов — проверить самостоятельность ребёнка и удобство HUB, а не производить ещё один большой учебный материал.</div>
+  </section>
+
+  <section class="panel view" id="view-all" hidden>
+    <h2 class="section-title">Все интерактивы</h2>
+    <div class="list">
+      <div class="activity">
+        <div><h3>Способы словообразования</h3><div class="meta">Сева · 6 класс · отсроченная MINI-проверка</div></div>
+        <button class="launch" data-start="word-formation" type="button">Открыть</button>
+      </div>
+      <div class="activity">
+        <div><h3>Характеристика предложения</h3><div class="meta">Дима · 8 класс · отсроченный возврат</div></div>
+        <button class="launch" data-start="sentence-characteristics" type="button">Открыть</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel view" id="view-results" hidden>
+    <h2 class="section-title">Результаты на этом устройстве</h2>
+    <div id="history-wrap"></div>
+    <div class="note">Пока результаты сохраняются только в этом браузере. Серверная синхронизация — следующий этап после проверки пилотов.</div>
+  </section>
+
+  <section class="panel player" id="player" aria-live="polite">
+    <div class="player-head">
+      <div><div class="eyebrow" id="eyebrow"></div><h2 id="player-title"></h2></div>
+      <div class="progress" id="progress"></div>
+    </div>
+    <div id="task-area"></div>
+  </section>
+</div>
+
+<script>
+(function(){
+  const activities={
+    "sentence-characteristics":{
+      id:"sentence-characteristics",student:"Дима Петухов",grade:"8",title:"Характеристика предложения",
+      instruction:"Для каждого предложения выбери четыре характеристики. Нажми «Проверить». Если есть ошибка — прочитай подсказку и исправь ответ.",
+      fields:[
+        {key:"purpose",label:"По цели высказывания",options:["Повествовательное","Вопросительное","Побудительное"],hint:"Проверь: предложение сообщает, спрашивает или побуждает к действию?"},
+        {key:"emotion",label:"По эмоциональной окраске",options:["Восклицательное","Невосклицательное"],hint:"Проверь, выражает ли предложение сильные чувства или эмоции."},
+        {key:"structure",label:"По количеству грамматических основ",options:["Простое","Сложное"],hint:"Сначала найди грамматическую основу. Сколько основ в предложении?"},
+        {key:"spread",label:"По наличию второстепенных членов",options:["Распространённое","Нераспространённое"],hint:"Проверь: есть ли в предложении второстепенные члены кроме основы?"}
+      ],
+      tasks:[
+        {prompt:"На площади зажглись огни.",answers:{purpose:"Повествовательное",emotion:"Невосклицательное",structure:"Простое",spread:"Распространённое"}},
+        {prompt:"Ты подготовил сообщение?",answers:{purpose:"Вопросительное",emotion:"Невосклицательное",structure:"Простое",spread:"Распространённое"}},
+        {prompt:"Берегите школьные книги!",answers:{purpose:"Побудительное",emotion:"Восклицательное",structure:"Простое",spread:"Распространённое"}},
+        {prompt:"Небо потемнело, и пошёл дождь.",answers:{purpose:"Повествовательное",emotion:"Невосклицательное",structure:"Сложное",spread:"Нераспространённое"}},
+        {prompt:"Как быстро пролетело лето!",answers:{purpose:"Повествовательное",emotion:"Восклицательное",structure:"Простое",spread:"Распространённое"}}
+      ]
+    },
+    "word-formation":{
+      id:"word-formation",student:"Сева",grade:"6",title:"Способы словообразования",
+      instruction:"Для каждого слова выбери производящее слово (или слова), а затем способ образования. Работай без таблицы правил.",
+      fields:[
+        {key:"source",label:"От какого слова / слов образовано?",optionsByTask:true,hint:"Сравни значение и состав слова. Найди более простое слово, от которого можно объяснить новое."},
+        {key:"method",label:"Способ образования",options:["Приставочный","Суффиксальный","Приставочно-суффиксальный","Сложение основ"],hint:"Проверь, что именно появилось в новом слове: приставка, суффикс, оба элемента или две основы."}
+      ],
+      tasks:[
+        {prompt:"переписать",options:{source:["писать","перепись","письмо","записать"]},answers:{source:"писать",method:"Приставочный"}},
+        {prompt:"лесник",options:{source:["лес","лесной","лесок","лесничий"]},answers:{source:"лес",method:"Суффиксальный"}},
+        {prompt:"подосиновик",options:{source:["осина","осиновый","осинник","подосиновый"]},answers:{source:"осина",method:"Приставочно-суффиксальный"}},
+        {prompt:"лесостепь",options:{source:["лес + степь","лесной + степной","лес + степной","лесок + степь"]},answers:{source:"лес + степь",method:"Сложение основ"}}
+      ]
+    }
+  };
+
+  const tabs=[...document.querySelectorAll(".tab")],views=[...document.querySelectorAll(".view")],
+        player=document.getElementById("player"),taskArea=document.getElementById("task-area"),
+        progress=document.getElementById("progress"),historyWrap=document.getElementById("history-wrap"),
+        eyebrow=document.getElementById("eyebrow"),playerTitle=document.getElementById("player-title");
+  let state=null;
+
+  function showView(name){
+    player.classList.remove("active");
+    views.forEach(v=>v.hidden=v.id!=="view-"+name);
+    tabs.forEach(t=>t.classList.toggle("active",t.dataset.view===name));
+    if(name==="results")renderHistory();
+  }
+  tabs.forEach(t=>t.addEventListener("click",()=>showView(t.dataset.view)));
+  document.querySelectorAll("[data-start]").forEach(b=>b.addEventListener("click",()=>startActivity(b.dataset.start)));
+
+  function startActivity(id){
+    const a=activities[id];
+    state={activity:a,index:0,firstTryCorrect:0,wrongAttempts:0,hadWrong:false};
+    views.forEach(v=>v.hidden=true);tabs.forEach(t=>t.classList.remove("active"));
+    player.classList.add("active");eyebrow.textContent=`${a.student} · ${a.grade} класс`;playerTitle.textContent=a.title;renderTask();
+  }
+
+  function getOptions(field,task){
+    if(field.optionsByTask)return task.options[field.key]||[];
+    return field.options||[];
+  }
+  function fieldHtml(field,task){
+    const opts=getOptions(field,task);
+    return `<div class="field" data-field="${field.key}">
+      <label for="sel-${field.key}">${field.label}</label>
+      <select id="sel-${field.key}" data-key="${field.key}">
+        <option value="">Выбери…</option>${opts.map(o=>`<option value="${o}">${o}</option>`).join("")}
+      </select>
+      <div class="hint">${field.hint}</div>
+    </div>`;
+  }
+
+  function renderTask(){
+    const a=state.activity;
+    if(state.index>=a.tasks.length){finish();return}
+    const task=a.tasks[state.index];state.hadWrong=false;progress.textContent=`${state.index+1} / ${a.tasks.length}`;
+    taskArea.innerHTML=`
+      ${state.index===0?`<div class="note" style="margin:0 0 14px">${a.instruction}</div>`:""}
+      <div class="prompt">${task.prompt}</div>
+      <div class="grid">${a.fields.map(f=>fieldHtml(f,task)).join("")}</div>
+      <div class="actions">
+        <button class="primary" id="check" type="button">Проверить</button>
+        <button class="secondary" id="exit" type="button">Выйти в HUB</button>
+      </div>
+      <div class="feedback" id="feedback"></div>`;
+    document.getElementById("check").addEventListener("click",check);
+    document.getElementById("exit").addEventListener("click",()=>showView("today"));
+  }
+
+  function check(){
+    const task=state.activity.tasks[state.index],fields=[...taskArea.querySelectorAll(".field")],
+          feedback=document.getElementById("feedback");
+    let complete=true,allCorrect=true;
+    fields.forEach(field=>{
+      field.classList.remove("error","ok");
+      const sel=field.querySelector("select");if(!sel.value){complete=false;return}
+      const key=sel.dataset.key;
+      if(sel.value===task.answers[key])field.classList.add("ok");
+      else{field.classList.add("error");allCorrect=false}
+    });
+    if(!complete){feedback.className="feedback bad";feedback.textContent="Выбери ответ во всех строках.";return}
+    if(allCorrect){
+      if(!state.hadWrong)state.firstTryCorrect++;
+      feedback.className="feedback good";
+      feedback.textContent=state.hadWrong?"Исправлено. Теперь всё верно.":"Всё верно с первой проверки.";
+      document.getElementById("check").disabled=true;fields.forEach(f=>f.querySelector("select").disabled=true);
+      const next=document.createElement("button");next.type="button";next.className="primary";
+      next.textContent=state.index===state.activity.tasks.length-1?"Завершить":"Следующее";
+      next.addEventListener("click",()=>{state.index++;renderTask()});
+      document.querySelector(".actions").prepend(next);
+    }else{
+      state.hadWrong=true;state.wrongAttempts++;
+      feedback.className="feedback bad";feedback.textContent="Есть ошибка. Исправь отмеченную строку — правильный ответ не показывается.";
+    }
+  }
+
+  function getHistory(){try{return JSON.parse(localStorage.getItem("interactiveMiniHub.results.v1")||"[]")}catch(e){return[]}}
+  function saveResult(r){const h=getHistory();h.unshift(r);localStorage.setItem("interactiveMiniHub.results.v1",JSON.stringify(h.slice(0,50)))}
+
+  function finish(){
+    const a=state.activity,r={activityId:a.id,title:a.title,student:a.student,grade:a.grade,firstTryCorrect:state.firstTryCorrect,total:a.tasks.length,wrongAttempts:state.wrongAttempts,completedAt:new Date().toISOString()};
+    saveResult(r);progress.textContent="Готово";
+    taskArea.innerHTML=`<div class="result"><h3>Готово</h3><div class="score">${r.firstTryCorrect} / ${r.total}</div>
+      <div>карточек выполнено полностью верно с первой проверки</div><div style="margin-top:8px;color:var(--muted)">Исправлений после проверки: ${r.wrongAttempts}</div></div>
+      <div class="actions"><button class="primary" type="button" id="back">Вернуться в HUB</button><button class="secondary" type="button" id="again">Пройти ещё раз</button></div>`;
+    document.getElementById("back").addEventListener("click",()=>showView("today"));
+    document.getElementById("again").addEventListener("click",()=>startActivity(a.id));
+  }
+
+  function renderHistory(){
+    const h=getHistory();
+    if(!h.length){historyWrap.innerHTML='<div class="empty">Пока нет завершённых попыток.</div>';return}
+    historyWrap.innerHTML=`<table class="history"><thead><tr><th>Ученик</th><th>Интерактив</th><th>С первой проверки</th><th>Исправления</th></tr></thead>
+      <tbody>${h.map(r=>`<tr><td>${r.student}</td><td>${r.title}</td><td>${r.firstTryCorrect}/${r.total}</td><td>${r.wrongAttempts}</td></tr>`).join("")}</tbody></table>`;
+  }
+  renderHistory();
+})();
+</script>
+</body>
+</html>
