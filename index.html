@@ -1,42 +1,22 @@
-<!doctype html>
-<html lang="ru">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>INTERACTIVE-MINI</title>
-  <style>
-    html,body{margin:0;min-height:100%;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:#f6f8fb;color:#203040}
-    .msg{max-width:720px;margin:48px auto;padding:24px;background:#fff;border:1px solid #dce4ec;border-radius:16px}
-    iframe{border:0;width:100vw;height:100vh;display:block;background:#fff}
-  </style>
-</head>
-<body>
-<div id="host"><div class="msg">Загружаю MINI…</div></div>
-<script>
-const API="https://acfuzhmqjdaypnhfabec.supabase.co/functions/v1/mini-api";
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>INTERACTIVE-MINI</title><style>
+html,body{margin:0;min-height:100%;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:#f6f8fb;color:#203040}.msg{max-width:720px;margin:48px auto;padding:24px;background:#fff;border:1px solid #dce4ec;border-radius:16px;line-height:1.5;text-align:center}.score{font-size:40px;font-weight:900;margin:10px 0}iframe{border:0;width:100vw;height:100vh;display:block;background:#fff}
+</style></head><body><div id="host"><div class="msg">Загружаю MINI…</div></div><script>
+const CONTENT_API="https://acfuzhmqjdaypnhfabec.supabase.co/functions/v1/mini-api";
+const STAGE2_API="https://acfuzhmqjdaypnhfabec.supabase.co/functions/v1/mini-stage2";
 const DEFAULT_RESOURCE="MINI-RU-CASE-DECL-001";
-
-(async()=>{
-  const host=document.getElementById("host");
-  const params=new URLSearchParams(location.search);
-  const resourceId=(params.get("r")||DEFAULT_RESOURCE).trim();
-
-  try{
-    const res=await fetch(API+"?action=content&r="+encodeURIComponent(resourceId),{cache:"no-store"});
-    if(!res.ok) throw new Error("HTTP "+res.status);
-    const data=await res.json();
-    if(!data.html) throw new Error("Published HTML missing");
-
-    document.title=data.title ? data.title+" — INTERACTIVE-MINI" : "INTERACTIVE-MINI";
-
-    const frame=document.createElement("iframe");
-    frame.title=data.title||"INTERACTIVE-MINI";
-    frame.srcdoc=data.html;
-    host.replaceWith(frame);
-  }catch(e){
-    host.innerHTML='<div class="msg"><strong>MINI не открылся.</strong><br>Обновите страницу. Если ошибка повторится, проверьте, опубликован ли ресурс.</div>';
-  }
-})();
-</script>
-</body>
-</html>
+function token(){const h=location.hash||"";return h.startsWith("#a=")?decodeURIComponent(h.slice(3)):""}
+async function api(body){const r=await fetch(STAGE2_API,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(body),cache:"no-store"});const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||("HTTP "+r.status));return d}
+function done(result){const r=result||{};const s=(r.score!=null&&r.totalTasks!=null)?'<div class="score">'+r.score+'/'+r.totalTasks+'</div>':"";document.title="Готово — INTERACTIVE-MINI";document.body.innerHTML='<div class="msg"><strong>Готово, результат отправлен преподавателю.</strong>'+s+'<div style="color:#6b7a89">Эту страницу можно закрыть.</div></div>'}
+async function assigned(t){const d=await api({action:"get_assignment",token:t});if(d.completed){done((d.assignment||{}).result);return}
+ const host=document.getElementById("host"),f=document.createElement("iframe");let seq=Number(d.clientSeq||0),state=d.state||{},chain=Promise.resolve();
+ f.title=(d.assignment||{}).title||"INTERACTIVE-MINI";
+ window.addEventListener("message",e=>{if(e.source!==f.contentWindow)return;const m=e.data||{};if(m.type!=="interactive-mini")return;
+  if(m.kind==="ready"){f.contentWindow.postMessage({type:"mini-restore",state},"*");return}
+  if(m.kind==="progress"){state=m.state||{};const n=++seq;chain=chain.catch(()=>{}).then(()=>api({action:"save_progress",token:t,clientSeq:n,state}).catch(()=>{}));return}
+  if(m.kind==="completed"){state=m.state||{};const result=m.result||{},n=++seq;(async()=>{try{await chain.catch(()=>{});await api({action:"complete",token:t,clientSeq:n,state,result});done(result)}catch(err){alert("Не удалось отправить результат. Обновите страницу и завершите последнее задание ещё раз.")}})()}
+ });
+ document.title=((d.assignment||{}).title||"INTERACTIVE-MINI")+" — INTERACTIVE-MINI";f.srcdoc=d.html;host.replaceWith(f)
+}
+async function direct(){const host=document.getElementById("host"),rid=(new URLSearchParams(location.search).get("r")||DEFAULT_RESOURCE).trim();try{const r=await fetch(CONTENT_API+"?action=content&r="+encodeURIComponent(rid),{cache:"no-store"});if(!r.ok)throw new Error("HTTP "+r.status);const d=await r.json();const f=document.createElement("iframe");document.title=(d.title||"INTERACTIVE-MINI")+" — INTERACTIVE-MINI";f.title=d.title||"INTERACTIVE-MINI";f.srcdoc=d.html;host.replaceWith(f)}catch(e){host.innerHTML='<div class="msg"><strong>MINI не открылся.</strong><br>Обновите страницу.</div>'}}
+(async()=>{const t=token();if(t){try{await assigned(t)}catch(e){document.getElementById("host").innerHTML='<div class="msg"><strong>Персональная ссылка не открылась.</strong><br>'+String(e.message||e)+'</div>'}}else await direct()})();
+</script></body></html>
